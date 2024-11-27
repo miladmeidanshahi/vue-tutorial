@@ -22,16 +22,17 @@
     "vue-router": "^4.0.0"
   },
   "devDependencies": {
-    "vite-plugin-checker": "^0.8.0",
+    "@quasar/app-vite": "^2.0.0-rc.1",
+    "autoprefixer": "^10.4.2",
     "eslint": "^8.57.0",
-    "eslint-plugin-vue": "^9.0.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-import": "^2.19.1",
     "eslint-plugin-n": "^15.0.0",
     "eslint-plugin-promise": "^6.0.0",
-    "@quasar/app-vite": "^2.0.0-rc.1",
-    "autoprefixer": "^10.4.2",
-    "postcss": "^8.4.14"
+    "eslint-plugin-vue": "^9.0.0",
+    "postcss": "^8.4.14",
+    "postcss-rtlcss": "^5.5.1",
+    "vite-plugin-checker": "^0.8.0"
   },
   "engines": {
     "node": "^24 || ^22 || ^20 || ^18",
