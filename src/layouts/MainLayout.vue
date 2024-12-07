@@ -1,35 +1,7 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
-      <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
-        />
-
-        <q-toolbar-title>
-          پنل ادمین
-        </q-toolbar-title>
-      </q-toolbar>
-    </q-header>
-
-    <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-    >
-      <q-list>
-        <essential-link
-          v-for="(link, index) in linksList"
-          :key="index"
-          v-bind="link"
-        />
-      </q-list>
-    </q-drawer>
+    <app-header @toggle-menu="onToggleMenu" />
+    <app-drawer v-model="leftDrawerOpen" />
 
     <q-page-container>
       <router-view />
@@ -39,24 +11,13 @@
 
 <script setup>
 import { ref } from 'vue'
-import EssentialLink from 'components/EssentialLink.vue'
 
-const linksList = [
-  {
-    title: 'خانه',
-    icon: 'home',
-    link: '/'
-  },
-  {
-    title: 'لیست کاربران',
-    icon: 'group',
-    link: '/users'
-  }
-]
+import AppHeader from 'components/AppHeader.vue'
+import AppDrawer from 'components/AppDrawer.vue'
 
-const leftDrawerOpen = ref(false)
+const leftDrawerOpen = ref(true)
 
-function toggleLeftDrawer () {
+function onToggleMenu (data) {
   leftDrawerOpen.value = !leftDrawerOpen.value
 }
 </script>
