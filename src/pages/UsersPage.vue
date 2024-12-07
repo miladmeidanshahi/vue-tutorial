@@ -19,46 +19,41 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
+
+import { api } from 'boot/axios'
+
 const columns = [
   {
-    name: 'firstName',
-    label: 'نام',
+    name: 'name',
+    label: 'نام و نام خانوادگی',
     align: 'left',
-    field: 'firstName',
+    field: 'name',
     sortable: true
   },
   {
-    name: 'lastName',
-    label: 'نام خانوادگی',
+    name: 'email',
+    label: 'پست الکترونیک',
     align: 'left',
-    field: 'lastName',
+    field: 'email',
     sortable: true
   },
   {
-    name: 'color',
-    label: 'رنگ',
+    name: 'avatar',
+    label: 'آواتار',
     align: 'left',
-    field: 'color',
-    format: value => `${value} را دوست دارم`,
-    sortable: true
+    field: 'avatar',
+    sortable: false
   }
 ]
 
-const rows = [
-  {
-    firstName: 'میلاد',
-    lastName: 'میدانشاهی',
-    color: 'مشکی'
-  },
-  {
-    firstName: 'علی',
-    lastName: 'میدانشاهی',
-    color: 'مشکی'
-  },
-  {
-    firstName: 'حسن',
-    lastName: 'میدانشاهی',
-    color: 'مشکی'
-  }
-]
+const rows = ref([])
+
+async function fetchUsers () {
+  const { data } = await api.get('/user')
+
+  rows.value = data
+}
+
+fetchUsers()
 </script>
