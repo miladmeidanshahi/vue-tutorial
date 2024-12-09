@@ -5,6 +5,14 @@
       :rows="rows"
       :columns="columns"
     >
+      <template #top-right>
+        <q-btn
+          label="افزودن کاربر جدید"
+          color="primary"
+          @click="userFormModal = true"
+        />
+      </template>
+
       <template #body-cell-color="props">
         <q-td :props="props">
           <q-chip
@@ -14,7 +22,20 @@
           />
         </q-td>
       </template>
+
+      <template #body-cell-avatar="props">
+        <q-td :props="props">
+          <q-avatar size="45px">
+            <img :src="props.value">
+          </q-avatar>
+        </q-td>
+      </template>
     </q-table>
+
+    <user-form
+      v-model="userFormModal"
+      @success="onSuccess"
+    />
   </q-page>
 </template>
 
@@ -22,6 +43,8 @@
 import { ref } from 'vue'
 
 import { api } from 'boot/axios'
+
+import UserForm from 'components/UserForm.vue'
 
 const columns = [
   {
@@ -48,11 +71,16 @@ const columns = [
 ]
 
 const rows = ref([])
+const userFormModal = ref(false)
 
 async function fetchUsers () {
   const { data } = await api.get('/user')
 
   rows.value = data
+}
+
+function onSuccess (data) {
+  rows.value.unshift(data)
 }
 
 fetchUsers()

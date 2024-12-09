@@ -16,9 +16,15 @@
 
       <q-btn-dropdown
         flat
-        label="میلاد میدانشاهی"
         stretch
       >
+        <template #label>
+          <q-avatar size="30px">
+            <img :src="user.avatar">
+          </q-avatar>
+          <span v-text="user.name" class="q-ml-sm" />
+        </template>
+
         <q-list>
           <q-item
             clickable
@@ -27,6 +33,16 @@
           >
             <q-item-section>
               <q-item-label>تغییر گذرواژه</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item
+            clickable
+            v-close-popup
+            @click="deleteProfile"
+          >
+            <q-item-section>
+              <q-item-label>حذف حساب کاربری</q-item-label>
             </q-item-section>
           </q-item>
 
@@ -49,14 +65,28 @@
 
 <script setup>
 import { ref } from 'vue'
+import { api } from 'boot/axios'
 
 import DialogChangePassword from 'components/DialogChangePassword.vue'
 
 defineEmits(['toggleMenu'])
 
+const user = ref({})
 const dialogChangePasswordState = ref(false)
+
+async function fetchUser () {
+  const { data } = await api.get('/user/2')
+
+  user.value = data
+}
 
 function openDialogChangePassword () {
   dialogChangePasswordState.value = true
 }
+
+async function deleteProfile () {
+  await api.delete('/user/2')
+}
+
+fetchUser()
 </script>

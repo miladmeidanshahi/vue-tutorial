@@ -13,15 +13,14 @@
           v-model="form.username"
           filled
           label="نام کاربری"
-          :rules="[v => !!v || 'این فیلد اجباری است']"
-          lazy-rules
+          :rules="[requiredRule]"
         />
 
         <q-input
           v-model="form.password"
           filled
           label="گذرواژه"
-          :rules="[v => !!v || 'این فیلد اجباری است']"
+          :rules="[requiredRule]"
         />
 
         <div>
@@ -41,6 +40,8 @@
 import { reactive } from 'vue'
 import { useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
+
+import { requiredRule } from 'src/utils/rules'
 
 const $q = useQuasar()
 const router = useRouter()
