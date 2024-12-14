@@ -1,8 +1,12 @@
 <template>
-  <q-dialog v-model="modelValue">
+  <q-dialog
+    v-model="modelValue"
+    @show="onShow"
+    @hide="onHide"
+  >
     <q-card>
       <q-card-section>
-        <div class="text-h6">افزودن کاربر جدید</div>
+        <div class="text-h6" v-text="`${isEdit ? 'ویرایش کاربر' : 'افزودن کاربر جدید'}`"></div>
       </q-card-section>
 
       <q-form
@@ -13,16 +17,19 @@
           <q-input
             v-model="form.name"
             :rules="[requiredRule]"
-            label="نام و نام خانوداگی"></q-input>
+            label="نام و نام خانوداگی"
+          />
 
           <q-input
             v-model="form.email"
             :rules="[requiredRule, emailRule]"
-            label="پست الکترونیک"></q-input>
+            label="پست الکترونیک"
+          />
 
-          <q-file
+          <q-input
             v-model="form.avatar"
-            label="آواتار"></q-file>
+            label="آواتار"
+          />
         </q-card-section>
 
         <q-card-actions align="right">
@@ -39,36 +46,58 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, inject, computed } from 'vue'
 
 import { api } from 'boot/axios'
 import { requiredRule, emailRule } from 'src/utils/rules'
 
-const emits = defineEmits(['success'])
+const emits = defineEmits(['success', 'update'])
 
 const modelValue = defineModel({
   default: false
 })
 
-const loading = ref(false)
+const data = inject('data')
 
-const form = reactive({
+const initialData = {
   name: null,
   email: null,
   avatar: null
-})
+}
+
+const form = ref(initialData)
+const loading = ref(false)
+
+const isEdit = computed(() => !!data.value.id)
 
 async function onSubmit () {
   loading.value = true
 
   try {
-    const { data } = await api.post('/user', form)
+    const config = {
+      url: isEdit.value ? `/user/${data.value.id}` : '/user',
+      method: isEdit.value ? 'put' : 'post',
+      data: form.value
+    }
+
+    const { data: formData } = await api(config)
 
     modelValue.value = false
 
-    emits('success', data)
+    const emitName = isEdit.value ? 'update' : 'success'
+
+    emits(emitName, formData)
   } finally {
     loading.value = false
   }
+}
+
+function onShow () {
+  form.value = { ...data.value }
+}
+
+function onHide () {
+  data.value = {}
+  form.value = initialData
 }
 </script>

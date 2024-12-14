@@ -30,17 +30,37 @@
           </q-avatar>
         </q-td>
       </template>
+
+      <template #body-cell-actions="props">
+        <q-td :props="props">
+          <div class="q-gutter-sm">
+            <q-btn
+              icon="edit"
+              round
+              color="blue"
+              @click="editUser(props.row)"
+            />
+            <q-btn
+              icon="delete"
+              round
+              color="red"
+              @click="deleteUser(props.row)"
+            />
+          </div>
+        </q-td>
+      </template>
     </q-table>
 
     <user-form
       v-model="userFormModal"
       @success="onSuccess"
+      @update="onUpdate"
     />
   </q-page>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { provide, ref } from 'vue'
 
 import { api } from 'boot/axios'
 
@@ -67,10 +87,17 @@ const columns = [
     align: 'left',
     field: 'avatar',
     sortable: false
+  },
+  {
+    name: 'actions',
+    label: 'عملیات',
+    align: 'right',
+    sortable: false
   }
 ]
 
 const rows = ref([])
+const userData = ref({})
 const userFormModal = ref(false)
 
 async function fetchUsers () {
@@ -79,9 +106,40 @@ async function fetchUsers () {
   rows.value = data
 }
 
+async function deleteUserRequest (id) {
+  await api.delete(`/user/${id}`)
+}
+
+function findRowIndex (dataId) {
+  return rows.value.findIndex(({ id }) => id === dataId)
+}
+
 function onSuccess (data) {
   rows.value.unshift(data)
 }
 
+function onUpdate (data) {
+  const rowIndex = findRowIndex(data.id)
+
+  rows.value[rowIndex] = data
+}
+
+function editUser (data) {
+  userData.value = data
+  userFormModal.value = true
+}
+
+async function deleteUser (data) {
+  const result = window.confirm(`آیا شما از حذف ${data.name} کاربر مطمئن هستید؟`)
+
+  if (result) await deleteUserRequest(data.id)
+
+  const rowIndex = findRowIndex(data.id)
+
+  rows.value.splice(rowIndex, 1)
+}
+
 fetchUsers()
+
+provide('data', userData)
 </script>
