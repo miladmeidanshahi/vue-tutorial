@@ -3,6 +3,7 @@
     <q-table
       title="لیست کاربران"
       :rows="rows"
+      :class="userListStatusColor"
       :columns="columns"
     >
       <template #top-right>
@@ -60,7 +61,7 @@
 </template>
 
 <script setup>
-import { provide, ref } from 'vue'
+import { computed, provide, ref } from 'vue'
 
 import { api } from 'boot/axios'
 
@@ -99,6 +100,12 @@ const columns = [
 const rows = ref([])
 const userData = ref({})
 const userFormModal = ref(false)
+
+const userListStatusColor = computed(() => {
+  return rows.value.length <= 2
+    ? 'bg-red'
+    : 'bg-white'
+})
 
 async function fetchUsers () {
   const { data } = await api.get('/user')
