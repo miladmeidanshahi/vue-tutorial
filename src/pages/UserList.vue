@@ -1,12 +1,27 @@
 <template>
   <q-page padding>
     <q-table
+      :ref="el => state.tableRef = el"
+      title="لیست کاربران"
       selection="multiple"
       row-key="id"
+      :filter="state.filter"
       :rows="state.rows"
       :columns="columns"
+      :loading="state.loading"
+      :rows-per-page-options="[5, 10, 20]"
+      v-model:pagination="state.pagination"
       v-model:selected="state.selected"
+      @request="fetchList"
     >
+      <template v-slot:top-right>
+        <q-input borderless dense debounce="300" v-model="state.filter" placeholder="Search">
+          <template v-slot:append>
+            <q-icon name="search" />
+          </template>
+        </q-input>
+      </template>
+
       <template #body-cell-avatar="props">
         <q-td :props="props">
           <q-img :src="props.value"></q-img>
@@ -25,13 +40,14 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue';
+import { api } from 'boot/axios'
+import { onMounted, reactive } from 'vue'
 
 const columns = [
   {
     name: 'avatar',
     align: 'left',
-    field: 'avatar',
+    field: 'image',
     sortable: false
   },
   {
@@ -46,7 +62,14 @@ const columns = [
     name: 'full-name',
     label: 'نام نام خانوادگی',
     align: 'left',
-    field: ({ first_name, last_name }) => `${first_name} ${last_name}`,
+    field: ({ firstName, lastName }) => `${firstName} ${lastName}`,
+    sortable: true
+  },
+  {
+    name: 'gender',
+    label: 'جنسیت',
+    align: 'left',
+    field: 'gender',
     sortable: true
   },
   {
@@ -61,58 +84,55 @@ const columns = [
     label: 'نقش',
     align: 'left',
     field: 'role',
-    format: row => row.label,
     sortable: true
   }
 ]
 
 const state = reactive({
-  rows: [
-    {
-      id: 1,
-      avatar: 'https://cdn.quasar.dev/img/avatar.png',
-      first_name: 'میلاد',
-      last_name: 'عباسی',
-      email: 'milad@gmail.com',
-      role: {
-        id: '',
-        label: 'admin'
+  rows: [],
+  filter: null,
+  loading: false,
+  tableRef: null,
+  selected: [],
+  pagination: {
+    page: 0,
+    sortBy: 'id',
+    descending: false,
+    rowsNumber: 0,
+    rowsPerPage: 10
+  }
+})
+
+
+async function fetchList({ filter, pagination }) {
+  const { page, sortBy, descending, rowsPerPage } = pagination
+
+  state.loading = true
+
+  try {
+    const { data } = await api.get('/users/search', {
+      params: {
+        q: filter,
+        skip: (page - 1) * rowsPerPage,
+        limit: rowsPerPage,
+        sortBy,
+        order: descending ? 'desc' : 'asc'
       }
-    },
-    {
-      id: 2,
-      avatar: 'https://cdn.quasar.dev/img/avatar.png',
-      first_name: 'رضا',
-      last_name: 'عباسی',
-      email: 'milad@gmail.com',
-      role: {
-        id: '',
-        label: 'staf'
-      }
-    },
-    {
-      id: 3,
-      avatar: 'https://cdn.quasar.dev/img/avatar.png',
-      first_name: 'حسن',
-      last_name: 'عباسی',
-      email: 'milad@gmail.com',
-      role: {
-        id: '',
-        label: 'guest'
-      }
-    },
-    {
-      id: 4,
-      avatar: 'https://cdn.quasar.dev/img/avatar.png',
-      first_name: 'علی',
-      last_name: 'عباسی',
-      email: 'milad@gmail.com',
-      role: {
-        id: '',
-        label: 'user'
-      }
-    }
-  ],
-  selected: []
+    })
+
+    state.pagination.page = page
+    state.pagination.sortBy = sortBy
+    state.pagination.descending = descending
+    state.pagination.rowsNumber = data.total
+    state.pagination.rowsPerPage = rowsPerPage
+
+    state.rows = data.users
+  } finally {
+    state.loading = false
+  }
+}
+
+onMounted(() => {
+  state.tableRef.requestServerInteraction()
 })
 </script>
