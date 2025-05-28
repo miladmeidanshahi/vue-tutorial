@@ -15,6 +15,12 @@
       @request="fetchList"
     >
       <template v-slot:top-right>
+        <q-btn
+          label="کاربر جدید"
+          color="primary"
+          class="q-mr-md"
+          @click="state.dialogForm = true"
+        />
         <q-input borderless dense debounce="300" v-model="state.filter" placeholder="Search">
           <template v-slot:append>
             <q-icon name="search" />
@@ -35,13 +41,42 @@
           </q-chip>
         </q-td>
       </template>
+
+      <template #body-cell-actions="props">
+        <q-td :props="props">
+          <q-btn
+            flat
+            round
+            icon="edit"
+            color="primary"
+            dense
+            @click="userEdit(props.row)"
+          />
+          <q-btn
+            flat
+            round
+            icon="delete"
+            color="negative"
+            dense
+          />
+        </q-td>
+      </template>
     </q-table>
+
+    <dialog-form
+      v-model="state.dialogForm"
+      :form-data="state.rowData"
+      @success="onSuccess"
+      @hide="onDialogFormHide"
+    />
   </q-page>
 </template>
 
 <script setup>
 import { api } from 'boot/axios'
 import { onMounted, reactive } from 'vue'
+
+import DialogForm from 'components/user-list/DialogForm.vue'
 
 const columns = [
   {
@@ -85,15 +120,22 @@ const columns = [
     align: 'left',
     field: 'role',
     sortable: true
+  },
+  {
+    name: 'actions',
+    label: 'عملیات',
+    align: 'left'
   }
 ]
 
 const state = reactive({
   rows: [],
   filter: null,
+  rowData: {},
   loading: false,
   tableRef: null,
   selected: [],
+  dialogForm: false,
   pagination: {
     page: 0,
     sortBy: 'id',
@@ -129,6 +171,25 @@ async function fetchList({ filter, pagination }) {
     state.rows = data.users
   } finally {
     state.loading = false
+  }
+}
+
+function userEdit (data) {
+  state.rowData = data
+  state.dialogForm = true
+}
+
+function onDialogFormHide () {
+  state.rowData = {}
+}
+
+function onSuccess ({ data, isEdit }) {
+  if (isEdit) {
+    const index = state.rows.findIndex(item => item.id === data.id)
+
+    state.rows.splice(index, 1, data)
+  } else {
+    state.rows.unshift(data)
   }
 }
 

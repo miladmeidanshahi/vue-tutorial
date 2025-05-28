@@ -51,6 +51,8 @@
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
 
+import { requiredRule, passwordRule } from 'src/utils'
+
 const router = useRouter()
 
 const state = reactive({
@@ -61,14 +63,6 @@ const state = reactive({
   isPwd: true,
   loading: false
 })
-
-function requiredRule(value) {
-  return !!value || 'این فیلد الزامی است'
-}
-
-function passwordRule (value) {
-  return value.length > 8 || 'رمزعبور باید بیشتر از ۸ کاراکتر باشد'
-}
 
 function onSubmit () {
   state.loading = true
