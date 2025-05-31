@@ -1,0 +1,3 @@
+<template>
+  Public Page
+</template>

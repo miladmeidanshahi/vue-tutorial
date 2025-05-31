@@ -3,14 +3,39 @@ const routes = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', name: 'HomePage', component: () => import('pages/IndexPage.vue') },
-      { path: 'users', name: 'UsersPage', component: () => import('pages/UserList.vue') },
+      {
+        path: '',
+        name: 'HomePage',
+        meta: {
+          requiresAuth: true
+        },
+        component: () => import('pages/IndexPage.vue')
+      },
+      {
+        path: 'users',
+        name: 'UsersPage',
+        meta: {
+          requiresAuth: true
+        },
+        component: () => import('pages/UserList.vue')
+      },
     ]
   },
   {
     path: '/auth',
+    meta: {
+      requiresAuth: false
+    },
     component: () => import('layouts/BlankLayout.vue'),
     children: [
+      {
+        path: 'public',
+        name: 'PublicPage',
+        meta: {
+          requiresAuth: false
+        },
+        component: () => import('pages/PublicPage.vue')
+      },
       {
         path: 'login',
         name: 'LoginPage',

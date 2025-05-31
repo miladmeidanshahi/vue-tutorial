@@ -58,6 +58,7 @@
             icon="delete"
             color="negative"
             dense
+            @click="deleteUserDialog(props.row.id)"
           />
         </q-td>
       </template>
@@ -66,8 +67,14 @@
     <dialog-form
       v-model="state.dialogForm"
       :form-data="state.rowData"
-      @success="onSuccess"
+      @success="onSuccessEdit"
       @hide="onDialogFormHide"
+    />
+
+    <dialog-confirm
+      v-model="state.dialogConfirm"
+      :id="state.rowData.id"
+      @success="onSuccessDelete"
     />
   </q-page>
 </template>
@@ -77,6 +84,7 @@ import { api } from 'boot/axios'
 import { onMounted, reactive } from 'vue'
 
 import DialogForm from 'components/user-list/DialogForm.vue'
+import DialogConfirm from 'components/user-list/DialogConfirm.vue'
 
 const columns = [
   {
@@ -136,6 +144,7 @@ const state = reactive({
   tableRef: null,
   selected: [],
   dialogForm: false,
+  dialogConfirm: false,
   pagination: {
     page: 0,
     sortBy: 'id',
@@ -183,7 +192,7 @@ function onDialogFormHide () {
   state.rowData = {}
 }
 
-function onSuccess ({ data, isEdit }) {
+function onSuccessEdit ({ data, isEdit }) {
   if (isEdit) {
     const index = state.rows.findIndex(item => item.id === data.id)
 
@@ -191,6 +200,19 @@ function onSuccess ({ data, isEdit }) {
   } else {
     state.rows.unshift(data)
   }
+}
+
+function onSuccessDelete () {
+  const id = state.rowData.id
+  const index = state.rows.findIndex(item => item.id === id)
+
+  state.rows.splice(index, 1)
+  state.rowData = {}
+}
+
+async function deleteUserDialog (id) {
+  state.rowData = { id }
+  state.dialogConfirm = true
 }
 
 onMounted(() => {

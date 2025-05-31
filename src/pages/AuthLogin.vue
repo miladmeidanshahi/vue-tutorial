@@ -49,27 +49,34 @@
 
 <script setup>
 import { reactive } from 'vue'
+import { useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
 
+import { api } from 'boot/axios'
 import { requiredRule, passwordRule } from 'src/utils'
 
+const $q = useQuasar()
 const router = useRouter()
 
 const state = reactive({
   form: {
-    username: null,
-    password: null
+    username: 'emilys',
+    password: 'emilyspass'
   },
   isPwd: true,
   loading: false
 })
 
-function onSubmit () {
+async function onSubmit () {
   state.loading = true
 
-  setTimeout(() => {
+  try {
+    const { data } = await api.post('/user/login', state.form)
+
+    $q.localStorage.set('token', data.accessToken)
+    await router.push({ name: 'HomePage' })
+  } finally {
     state.loading = false
-    router.push({ name: 'HomePage' })
-  }, 3000)
+  }
 }
 </script>
