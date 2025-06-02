@@ -60,6 +60,14 @@
             dense
             @click="deleteUserDialog(props.row.id)"
           />
+          <q-btn
+            :to="{ name: 'UserViewPage', params: { id: props.row.id } }"
+            flat
+            round
+            icon="visibility"
+            color="primary"
+            dense
+          />
         </q-td>
       </template>
     </q-table>

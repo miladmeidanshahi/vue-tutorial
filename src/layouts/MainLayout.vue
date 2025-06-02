@@ -22,7 +22,9 @@
     <drawer-menu v-model="drawerOpen"></drawer-menu>
 
     <q-page-container>
-      <router-view />
+      <suspense>
+        <router-view />
+      </suspense>
     </q-page-container>
   </q-layout>
 </template>

@@ -17,8 +17,16 @@ const routes = [
         meta: {
           requiresAuth: true
         },
-        component: () => import('pages/UserList.vue')
+        component: () => import('pages/users/IndexPage.vue')
       },
+      {
+        path: 'users/:id',
+        name: 'UserViewPage',
+        meta: {
+          requiresAuth: true
+        },
+        component: () => import('pages/users/ViewPage.vue')
+      }
     ]
   },
   {
