@@ -2,8 +2,8 @@
 // so you can safely delete all default props below
 
 export default {
-  menusTitle: 'Menus',
+  menusTitle: 'منوها',
   menusDrawer: {
-    users: 'Users'
+    users: 'کاربران'
   }
 }

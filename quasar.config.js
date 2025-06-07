@@ -15,6 +15,7 @@ export default defineConfig((ctx) => {
     boot: [
       'authorization',
       'i18n',
+      'quasar-lang-pack',
       'axios'
     ],
 

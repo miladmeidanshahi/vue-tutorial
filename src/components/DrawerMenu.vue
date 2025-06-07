@@ -6,7 +6,7 @@
   >
     <q-list>
       <q-item-label header>
-        Essential Links
+        {{ $t('menusTitle') }}
       </q-item-label>
 
       <EssentialLink
@@ -19,15 +19,20 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
+import { computed } from 'vue'
+
 import EssentialLink from 'components/EssentialLink.vue'
 
 const modelValue = defineModel({ default: false })
 
-const linksList = [
+const { t } = useI18n()
+
+const linksList = computed(() => [
   {
-    title: 'صفحه کاربران',
+    title: t('menusDrawer.users'),
     icon: 'person',
     to: { name: 'UsersPage' }
   }
-]
+])
 </script>
