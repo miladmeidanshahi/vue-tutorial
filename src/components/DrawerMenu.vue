@@ -33,6 +33,11 @@ const linksList = computed(() => [
     title: t('menusDrawer.users'),
     icon: 'person',
     to: { name: 'UsersPage' }
+  },
+  {
+    title: 'publicPage',
+    icon: 'person',
+    to: { name: 'PublicPage' }
   }
 ])
 </script>

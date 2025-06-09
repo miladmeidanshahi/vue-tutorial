@@ -1,5 +1,6 @@
-import { defineBoot } from '#q-app/wrappers'
 import axios from 'axios'
+import { defineBoot } from '#q-app/wrappers'
+import { LocalStorage } from 'quasar'
 
 // Be careful when using SSR for cross-request state pollution
 // due to creating a Singleton instance here;
@@ -8,6 +9,16 @@ import axios from 'axios'
 // "export default () => {}" function below (which runs individually
 // for each client)
 const api = axios.create({ baseURL: 'https://dummyjson.com/' })
+
+api.interceptors.request.use((config) => {
+  const token = LocalStorage.getItem('token')
+
+  if (token) config.headers.Authorization = `Bearer ${token}`
+
+  return config
+}, (error) => {
+  return Promise.reject(error)
+})
 
 export default defineBoot(({ app }) => {
   // for use inside Vue files (Options API) through this.$axios and this.$api
